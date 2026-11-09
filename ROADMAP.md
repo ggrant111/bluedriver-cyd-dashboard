@@ -5,7 +5,7 @@
 **Target hardware:** ESP32-2432S028R (2.8-inch resistive-touch CYD, 320x240 landscape)  
 **Data source:** BlueDriver OBD-II Bluetooth LE adapter  
 **As of:** 2026-11-09  
-**Status:** v0.3 BLE discovery/diagnostic firmware and native tests **PASS in CI**; v0.2 CYD hardware bring-up and physical BLE discovery/connection/pairing remain unverified.
+**Status:** v0.3 BLE firmware passed CI. v0.4 offline protocol preparation added for synthetic testing (no real BLE writes). The v0.2 CYD hardware bring-up, real BLE connection, and live vehicle data are still unverified.
 
 ## Goal
 
@@ -34,6 +34,19 @@ An independent, offline-capable in-vehicle dashboard. The CYD connects directly 
 | v0.8.0 | Diagnostics and refinements | Read-only DTC reporting (opt-in), serial diagnostics, BLE troubleshooting, configurable gauge pages | Logs informative; no write/clear operations |
 | v0.9.0 | Distribution | OTA/update architecture, firmware release assets and flashing instructions | Recovery flash tested; artifact hash and board identity published |
 | v1.0.0 | Stable release | Test matrix, documentation, release manifest, supported model limitations | All stable criteria met on target hardware and vehicle |
+
+## v0.4 offline preparation — safe without car (CI verification pending)
+
+- [x] Add transport-independent nine-command LM handshake state machine.
+- [x] Add bounded response/prompt gating and per-DATA-fragment ACK prioritization.
+- [x] Add read-only synthetic packet replay with observable command hex, fragment sizes and ACKs.
+- [x] Add host-native negative tests: timeout, unexpected sequencing, missing ACK, response overflow, and failed writes.
+- [x] Add an offline session replay log artifact to CI; no physical scanner is accessed.
+- [ ] Confirm synthetic tests and firmware cross-build pass on the feature branch.
+- [ ] Real adapter GATT/bond/subscription evidence and actual BLE transport remain future work.
+- [ ] Only after physical verification, integrate real writes as an explicit opt-in hardware milestone.
+
+See [docs/OFFLINE_TESTING.md](docs/OFFLINE_TESTING.md). This does **not** complete the v0.4 milestone or prove interoperability.
 
 ## Implementation: v0.3 BLE discovery (hardware validation pending)
 
@@ -70,7 +83,8 @@ Passing A/B does NOT imply C/D/E/F.
 
 - 'src/main.cpp': physical display/UI and lifecycle.
 - 'include/obd_pids.h': platform-independent, pure PID decode functions.
-- 'include/bluedriver_protocol.h' (future): XOR, reassembly and state machine, host-testable.
+- 'include/bluedriver_protocol.h': XOR and response-reassembly primitives.
+- 'include/bluedriver_session.h': transport-free v0.4 LM protocol simulator (not attached to BLE transport).
 - 'src/bluedriver_ble.cpp': ESP32/NimBLE discovery, explicit connect, GATT diagnostic and manual pairing (v0.3).
 - 'test/': host-native deterministic unit tests and captured/replayed protocol fixtures.
 - '.github/workflows/ci.yml': test, firmware build and uploaded binary artifact.
