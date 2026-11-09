@@ -1,0 +1,9 @@
+.pio/
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+.DS_Store
+*.log
+captures/private/
+secrets/
