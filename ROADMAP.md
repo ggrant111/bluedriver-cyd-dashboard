@@ -5,7 +5,7 @@
 **Target hardware:** ESP32-2432S028R (2.8-inch resistive-touch CYD, 320x240 landscape)  
 **Data source:** BlueDriver OBD-II Bluetooth LE adapter  
 **As of:** 2026-11-09  
-**Status:** v0.1 host tests and firmware cross-compilation passed in GitHub Actions; physical hardware and BlueDriver connection remain unverified.
+**Status:** v0.3 BLE discovery/diagnostic firmware and native tests **PASS in CI**; v0.2 CYD hardware bring-up and physical BLE discovery/connection/pairing remain unverified.
 
 ## Goal
 
@@ -26,7 +26,7 @@ An independent, offline-capable in-vehicle dashboard. The CYD connects directly 
 | --- | --- | --- | --- |
 | v0.1.0 | Project bootstrap | PlatformIO project, basic landscape dashboard with clearly labeled DEMO values, PID decoder, docs, native test harness, CI firmware build/artifact | Host tests pass and CYD firmware compiles in CI; hardware unverified |
 | v0.2.0 | CYD bring-up | Board revision check, TFT colors/orientation, touch calibration, screen refresh without full-screen flicker, stable power/boot | Device shows test screen; touch corners work; serial log saved |
-| v0.3.0 | BlueDriver BLE discovery | Scan advertised names 'BlueDriv'/'LSB2-', show RSSI/device identity, manual selection, connection lifecycle diagnostics | Our adapter found consistently; observed UUIDs compared to reference |
+| v0.3.0 | BlueDriver BLE discovery | Scan advertised names 'BlueDriv'/'LSB2-', show RSSI/device identity, explicit serial selection, GATT inventory and optional manual bond | **A/B:** tests and firmware build; **C/D:** actual CYD scanner/connection/bonding evidence required before closing milestone |
 | v0.4.0 | BlueDriver proprietary session | Connect/bond as needed, subscribe CMD/DATA/STATUS, implement XOR, credit window/fragment ACKs, exact LM setup sequence, sequential command runner | Scanner reaches ready state; one known PID returns a complete answer with '>' delimiter |
 | v0.5.0 | Vehicle data | Capability detection; serial polling of standard Mode 01 RPM, speed, coolant, load, throttle, intake air, fuel level, ECU voltage | At least RPM, speed, coolant, voltage confirmed against known state/independent reader |
 | v0.6.0 | Dashboard UX & reliability | Gauge layout, freshness/timeout indicators, stable redraw and reconnection, settings persistence, user-selectable units | Sustained driving-session bench/passenger test without misleading stale readings |
@@ -35,7 +35,18 @@ An independent, offline-capable in-vehicle dashboard. The CYD connects directly 
 | v0.9.0 | Distribution | OTA/update architecture, firmware release assets and flashing instructions | Recovery flash tested; artifact hash and board identity published |
 | v1.0.0 | Stable release | Test matrix, documentation, release manifest, supported model limitations | All stable criteria met on target hardware and vehicle |
 
-## Immediate work — v0.1
+## Implementation: v0.3 BLE discovery (hardware validation pending)
+
+- [x] Add BLE name matching/UUID registry and native unit tests.
+- [x] Add bounded 6-second active scan, 6 candidates max, RSSI and on-screen names.
+- [x] Explicit connection and GATT characteristic/property enumeration over NimBLE.
+- [x] Optional manual BLE security request (serial 'p'); no automatic bonding or OBD writes.
+- [x] Preserve separate, prominently labeled DEMO mode.
+- [x] CI firmware compile and native tests for v0.3 — [passing run #22](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42714380035) (2026-11-09).
+- [ ] Flash actual CYD; verify LCD, serial UX, scan and GATT; collect redacted evidence.
+- [ ] Confirm physical pairing and stable reconnection; touch calibration remains v0.2 work.
+
+## Historical work — v0.1
 
 - [x] Establish this repository and feature branch.
 - [x] Add a maintained roadmap and technical reference.
@@ -60,7 +71,7 @@ Passing A/B does NOT imply C/D/E/F.
 - 'src/main.cpp': physical display/UI and lifecycle.
 - 'include/obd_pids.h': platform-independent, pure PID decode functions.
 - 'include/bluedriver_protocol.h' (future): XOR, reassembly and state machine, host-testable.
-- 'src/bluedriver_ble.cpp' (future): ESP32/NimBLE transport boundary.
+- 'src/bluedriver_ble.cpp': ESP32/NimBLE discovery, explicit connect, GATT diagnostic and manual pairing (v0.3).
 - 'test/': host-native deterministic unit tests and captured/replayed protocol fixtures.
 - '.github/workflows/ci.yml': test, firmware build and uploaded binary artifact.
 
