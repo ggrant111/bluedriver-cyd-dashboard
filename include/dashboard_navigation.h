@@ -50,8 +50,14 @@ inline Action actionAt(Screen screen, dash::Layout layout, int x, int y) {
   if (screen == Screen::Settings) {
     if (y < 40 || (y >= 120 && y < 124)) return Action::None;
     if (x < 9 || x > 311 || (x >= 157 && x < 163)) return Action::None;
-    int i = (y < 120 ? 0 : 2) + (x < 160 ? 0 : 1);
-    return static_cast<Action>(static_cast<int>(Action::ToggleUnits) + i);
+    const int i = (y < 120 ? 0 : 2) + (x < 160 ? 0 : 1);
+    switch (i) {
+      case 0: return Action::ToggleUnits;
+      case 1: return Action::ToggleLayout;
+      case 2: return Action::NextScenario;
+      case 3: return Action::TogglePause;
+    }
+    return Action::None;
   }
   if (layout == dash::Layout::Focus) {
     if (x < 9 || x > 311) return Action::None;
