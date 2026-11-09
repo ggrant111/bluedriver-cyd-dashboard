@@ -17,6 +17,8 @@ Download the repository ZIP, extract it, and open **`simulator/index.html`** loc
 
 The CYD firmware also now boots to a **DEMO dashboard without scanning** and provides matching navigation through touch (uncalibrated; verify your physical CYD) or USB serial. On the hardware screen, tap a gauge to cycle metrics. Use PAGE/BLE/SETUP/FOCUS along the bottom. Preferences retain gauge/layout/units on reboot.
 
+Download the standalone simulator files as the **bluedriver-cyd-offline-browser-simulator** artifact from a successful GitHub Actions run, unzip, then open `index.html`. The repository ZIP is also supported.
+
 **[Full simulator and calibration guide](docs/DASHBOARD_SIMULATOR.md)**.
 
 ## Work that can run without the scanner or car
