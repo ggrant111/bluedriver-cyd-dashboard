@@ -40,16 +40,16 @@ void BlueDriverBle::scan(bool includeAll) {
   NimBLEScanResults results = scanner->start(6, false); // 1.x: duration seconds
   Serial.printf("[BLE] advertisements=%d\n", results.getCount());
   for (int i = 0; i < results.getCount(); ++i) {
-    auto* device = results.getDevice(i);
-    if (!device) continue;
-    const std::string name = device->getName();
+    // NimBLE 1.4.3 returns NimBLEAdvertisedDevice by value (2.x returns pointer).
+    auto device = results.getDevice(i);
+    const std::string name = device.getName();
     bool likely = bleidentity::isLikelyBlueDriver(name.c_str());
     if (!likely && !includeAll) continue;
     if (count_ >= kMaxDevices) break;
     Candidate& c = candidates_[count_++];
     c.name = name.empty() ? "(unnamed)" : name;
-    c.address = device->getAddress().toString();
-    c.rssi = device->getRSSI();
+    c.address = device.getAddress().toString();
+    c.rssi = device.getRSSI();
     c.likely = likely;
     // Only print last MAC octets; do not commit unredacted device identifiers.
     const char* tail = c.address.size() >= 5 ?
