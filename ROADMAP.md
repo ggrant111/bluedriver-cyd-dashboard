@@ -5,7 +5,7 @@
 **Target hardware:** ESP32-2432S028R (2.8-inch resistive-touch CYD, 320x240 landscape)  
 **Data source:** BlueDriver OBD-II Bluetooth LE adapter  
 **As of:** 2026-11-09  
-**Status:** Project bootstrap. No successful BlueDriver-to-CYD connection has been demonstrated yet.
+**Status:** v0.1 host tests and firmware cross-compilation passed in GitHub Actions; physical hardware and BlueDriver connection remain unverified.
 
 ## Goal
 
@@ -39,8 +39,8 @@ An independent, offline-capable in-vehicle dashboard. The CYD connects directly 
 
 - [x] Establish this repository and feature branch.
 - [x] Add a maintained roadmap and technical reference.
-- [ ] Implement starter firmware, offline gauge simulator and PID decoder.
-- [ ] Run native parser tests and compile a CYD binary in GitHub Actions.
+- [x] Implement starter firmware, offline gauge simulator and PID decoder.
+- [x] Run native parser tests and compile a CYD binary in GitHub Actions ([passing CI run #4](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42697990863), 2026-11-09).
 - [ ] Confirm actual CYD LCD/controller revision and flash on hardware.
 - [ ] Capture real BlueDriver advertisements and GATT characteristics.
 
