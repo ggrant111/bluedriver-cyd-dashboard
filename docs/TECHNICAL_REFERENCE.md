@@ -25,6 +25,14 @@
 - https://github.com/edemko/esp32-2432s028r-idf-clock  
 - https://github.com/chanslor/ESP32-2432S028R/blob/master/User_Setup.h
 
+## Offline 320×240 simulator — v0.3.1
+
+[IMPLEMENTED, PHYSICAL TESTS PENDING] New `include/dashboard_model.h` provides synthetic data generation only (650ms updates), nine standard PID concept slots, two default pages, Grid/Focus layouts, imperial/metric conversions, simulated driving patterns, pause/resume and per-metric freshness warnings (LAG at 1500ms and STALE at 3500ms). `include/dashboard_navigation.h` defines touchscreen hit areas in 320×240 landscape coordinates.
+
+The CYD firmware now boots directly to the demo dashboard, uses Preferences/NVS for gauge/layout/unit/page/scenario selection, provides serial navigation and an XPT2046 touchscreen driver configured for the commonly published CYD GPIOs. Raw touch calibration and rotation assumptions **are NOT verified**; use serial `t` to capture four-corner touch events. The previous v0.3 read-only BLE scan remains available on demand, without driving dashboard sensor readings.
+
+The offline browser preview in `simulator/index.html` mirrors the screens and synthetic model, uses no Bluetooth or web backend, and can be opened from an extracted repository ZIP. Native/browser tests and the CYD firmware cross-build passed in [run #61](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42721276682); physical verification has not occurred. See [DASHBOARD_SIMULATOR.md](DASHBOARD_SIMULATOR.md) for the layout contract and tests.
+
 ## v0.3 BLE discovery / reconnaissance implementation
 
 **Status:** v0.3 host-native tests and CYD cross-compilation **passed** ([CI run #22](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42714380035)); **not validated on actual CYD/BlueDriver hardware**. Scanner does not exchange OBD-II data.

@@ -1,6 +1,6 @@
 # BlueDriver CYD Dashboard
 
-**v0.3.0 experimental** — ESP32-2432S028R (common 2.8-inch ILI9341 CYD, 320×240) Bluetooth discovery and diagnostic dashboard for a BlueDriver BLE OBD-II scanner. Primary intended vehicle: 2024 Ford Bronco Outer Banks 2.3L.
+**v0.3.1 experimental** — ESP32-2432S028R (common 2.8-inch ILI9341 CYD, 320×240) Bluetooth discovery and diagnostic dashboard for a BlueDriver BLE OBD-II scanner. Primary intended vehicle: 2024 Ford Bronco Outer Banks 2.3L.
 
 > **NOT a live car dashboard yet.** Discovery, connection, GATT inventory and opt-in BLE security are implemented in source, but have **not** been physically verified on the project CYD/BlueDriver. There are no OBD data reads, no vehicle control commands, and the demo gauge screen remains visibly labeled **DEMO**.
 
@@ -9,6 +9,17 @@
 - [ROADMAP.md](ROADMAP.md) — phases, CI milestones, hardware validation gates
 - [docs/TECHNICAL_REFERENCE.md](docs/TECHNICAL_REFERENCE.md) — BlueDriver BLE research, service/characteristic UUIDs, pinout, OBD formulas, actual evidence ledger
 - [docs/OFFLINE_TESTING.md](docs/OFFLINE_TESTING.md) — v0.4 preparation: simulated LM session, error tests, replay commands, remaining hardware steps
+- [docs/DASHBOARD_SIMULATOR.md](docs/DASHBOARD_SIMULATOR.md) — offline 320×240 dashboard, layouts, browser setup, touch/serial navigation
+
+## NEW: Offline 320×240 dashboard simulator
+
+Download the repository ZIP, extract it, and open **`simulator/index.html`** locally in your browser (keep `app.js` and `model.js` beside it). No server or vehicle required. Change among nine gauges, two pages, Grid/Focus layouts, mph/km/h and Fahrenheit/Celsius, three driving scenarios, pause and stale data. The preview always says **DEMO** and cannot connect to Bluetooth.
+
+The CYD firmware also now boots to a **DEMO dashboard without scanning** and provides matching navigation through touch (uncalibrated; verify your physical CYD) or USB serial. On the hardware screen, tap a gauge to cycle metrics. Use PAGE/BLE/SETUP/FOCUS along the bottom. Preferences retain gauge/layout/units on reboot.
+
+Download the standalone simulator files as the **bluedriver-cyd-offline-browser-simulator** artifact from a successful GitHub Actions run, unzip, then open `index.html`. The repository ZIP is also supported.
+
+**[Full simulator and calibration guide](docs/DASHBOARD_SIMULATOR.md)**.
 
 ## Work that can run without the scanner or car
 
@@ -33,7 +44,7 @@ pio run -e cyd -t upload --upload-port COM6
 pio device monitor -b 115200 --port COM6
 ```
 
-Use the actual serial port (e.g. COM6 on Windows, /dev/ttyUSB0 on Linux). The firmware is at `.pio/build/cyd/firmware.bin`. For download directly from CI, open the latest successful GitHub Actions run and choose **bluedriver-cyd-v0.3.0-ble-experimental** under Artifacts. Hardware revision and LCD orientation must be checked before use; no claim is made that all CYD clones use this pinout.
+Use the actual serial port (e.g. COM6 on Windows, /dev/ttyUSB0 on Linux). The firmware is at `.pio/build/cyd/firmware.bin`. For download directly from CI, open the latest successful GitHub Actions run and choose **bluedriver-cyd-v0.3.1-offline-dashboard-experimental** under Artifacts. Hardware revision and LCD orientation must be checked before use; no claim is made that all CYD clones use this pinout.
 
 ## First live BLE test (parked vehicle only)
 
@@ -75,7 +86,9 @@ A green workflow verifies the host decoders/filter tests and that a binary can b
 
 ## Current architecture
 
-- `src/main.cpp`: CYD UI + 115200 serial commands, displays BlueDriver scan results; segregated DEMO gauges.
+- `src/main.cpp`: CYD demo dashboard, settings, XPT2046 touch/serial navigation and separate BLE diagnostics.
+- `include/dashboard_model.h` and `include/dashboard_navigation.h`: host-testable synthetic values, units, layout, freshness and touch hit regions.
+- `simulator/`: standalone offline browser preview with locally persisted settings.
 - `src/bluedriver_ble.cpp`: ESP32/NimBLE read-only discovery, explicit connection, GATT inventory and optional secured link.
 - `include/ble_identity.h`: pure C++ advertisement matching + known characteristic classifier.
 - `include/bluedriver_protocol.h` and `include/obd_pids.h`: pure C++ utilities for future v0.4+ protocol and PID handling, **not** used to send commands in this release.
@@ -83,6 +96,6 @@ A green workflow verifies the host decoders/filter tests and that a binary can b
 
 ## Next
 
-**Hardware bring-up and pairing confirmation**, then proprietary BlueDriver LM initialization, ACK/credit handling, and first real read-only Mode 01 PID. Read-only, parked-vehicle debugging only; do not configure, use, or debug the device while driving.
+**Hardware bring-up, touch calibration, and pairing confirmation**, then proprietary BlueDriver LM initialization, ACK/credit handling, and first real read-only Mode 01 PID. Read-only, parked-vehicle debugging only; do not configure, use, or debug the device while driving.
 
 Independent research project; no affiliation with BlueDriver or Ford.

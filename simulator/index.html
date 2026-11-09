@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BlueDriver CYD — Offline Dashboard Simulator</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#09141a;color:#e8f6f8}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh}
+main{max-width:1120px;margin:auto;padding:22px}
+h1{font-size:clamp(1.3rem,3vw,2rem);margin:0 0 6px}
+p{line-height:1.55}
+.muted{color:#91a9b3}
+.small{font-size:12px}
+.header{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px}
+.marker{font-size:12px;background:#263c43;border:1px solid #36565d;padding:6px 10px;border-radius:100px}
+.workspace{display:grid;grid-template-columns:minmax(0,620px) minmax(250px,1fr);gap:20px;align-items:start}
+.frame{background:#131f27;border:1px solid #34525b;border-radius:24px;padding:20px 18px 27px;box-shadow:0 15px 50px #0006}
+.frame .label{text-align:center;color:#91a9b3;letter-spacing:.11em;font-size:11px;margin-bottom:14px}
+.preview{width:100%;max-width:520px;aspect-ratio:4/3;background:#081118;margin:auto;position:relative;overflow:hidden;border:4px solid #02080b;border-radius:9px}
+#screen{position:absolute;width:320px;height:240px;left:0;top:0;transform-origin:top left;background:#082028;color:#fff;user-select:none;font-family:Arial,sans-serif}
+.hw-header{position:absolute;left:9px;right:9px;top:6px;height:28px;border-bottom:1px solid #3c585f;display:flex;align-items:flex-start;justify-content:space-between}
+.hw-title{font-size:13px;font-weight:700;letter-spacing:.4px;padding-top:3px}
+.demo{font-size:11px;font-weight:800;background:#ffae36;color:#09141a;border-radius:5px;padding:4px 12px}
+.grid-area{position:absolute;left:9px;top:40px;width:302px;height:164px}
+.tile{position:absolute;border:none;border-radius:7px;background:#183038;color:#fff;text-align:left;cursor:pointer;overflow:hidden;padding:0}
+.tile:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid #ffbd59;outline-offset:2px}
+.tile .name{position:absolute;left:8px;top:7px;color:#abbfc6;font-size:11px;font-weight:700;white-space:nowrap}
+.tile .num{position:absolute;left:8px;top:31px;font-size:26px;font-weight:800;letter-spacing:-1px;color:#e8f7f8}
+.tile.main .num{color:#39c0b5}
+.tile .u{position:absolute;right:6px;bottom:21px;color:#abc0c5;font-size:10px}
+.tile .fresh{position:absolute;right:6px;bottom:7px;color:#56c4b1;font-size:9px;font-weight:800}
+.tile.delayed .fresh,.tile.delayed .num{color:#ffbe5c}
+.tile.stale .fresh,.tile.stale .num{color:#ff7879}
+.tile .tip{position:absolute;left:8px;bottom:6px;font-size:8px;color:#749ca5}
+.tile.grid-0{left:0;top:0;width:148px;height:80px}
+.tile.grid-1{left:154px;top:0;width:148px;height:80px}
+.tile.grid-2{left:0;top:84px;width:148px;height:80px}
+.tile.grid-3{left:154px;top:84px;width:148px;height:80px}
+.tile.focus-0{left:0;top:0;width:302px;height:88px}
+.tile.focus-0 .num{font-size:38px;top:28px}
+.tile.focus-1,.tile.focus-2,.tile.focus-3{width:96px;height:70px;top:94px}
+.tile.focus-1{left:0}
+.tile.focus-2{left:103px}
+.tile.focus-3{left:206px}
+.tile[class*="focus-"]:not(.focus-0) .num{font-size:22px;top:27px}
+.tile[class*="focus-"]:not(.focus-0) .name{font-size:9px}
+.hw-footer{position:absolute;left:0;right:0;bottom:0;height:30px;display:flex;gap:4px;padding:3px}
+.hw-footer button{font-size:11px;font-weight:700;background:#183038;border:0;color:#eaf3f5;border-radius:4px;flex:1;min-width:0;cursor:pointer}
+.hw-footer button:hover{background:#23515a}
+.setup-tiles{position:absolute;left:9px;top:40px;right:9px;bottom:36px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:80px 80px;gap:4px 6px}
+.setup-tiles button{text-align:left;background:#183038;border:0;color:#fff;border-radius:7px;padding:9px;cursor:pointer}
+.setup-tiles .setting-label{font-size:11px;color:#aec6c9;display:block;margin-bottom:14px}
+.setup-tiles .setting-value{font-size:16px;font-weight:700}
+.ble-notice{position:absolute;left:10px;top:48px;right:10px;font-size:12px;color:#b2cbd0;line-height:1.6}
+.ble-notice strong{color:#fff;display:block;font-size:15px;margin:12px 0 6px}
+aside{background:#112630;border:1px solid #2a4953;border-radius:18px;padding:19px}
+aside h2{margin:0 0 16px;font-size:18px}
+.control{display:flex;flex-direction:column;gap:5px;margin:0 0 13px}
+.control label{font-weight:600;font-size:12px;color:#b3cbd0}
+select,.action{height:39px;background:#213b45;border:1px solid #3b5c65;border-radius:8px;color:#fff;padding:0 11px;font-size:14px;max-width:100%}
+select{width:100%}
+button.action{cursor:pointer;font-weight:600}
+button.action:hover{border-color:#58c2b6;background:#31525c}
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rule{border-top:1px solid #2e4952;margin:17px 0;padding-top:15px}
+.status{background:#1c3540;padding:12px;border-radius:10px;color:#c8dcdf;font-size:12px;margin-top:14px}
+.status strong{color:#ffd18e}
+.note{font-size:13px;color:#aabec5;margin-top:20px}
+@media (max-width:800px){.workspace{grid-template-columns:1fr}main{padding:14px}aside{max-width:620px}.frame{padding:15px 10px 20px}}
+</style>
+</head>
+<body>
+<main>
+ <div class="header">
+  <div><h1>BlueDriver CYD Dashboard</h1><div class="muted">Offline 320 × 240 design simulator · v0.3.1</div></div>
+  <div class="marker">SYNTHETIC TELEMETRY ONLY</div>
+ </div>
+ <div class="workspace">
+  <section class="frame" aria-label="CYD screen simulator">
+   <div class="label">2.8-INCH ESP32 CYD · LANDSCAPE SCREEN</div>
+   <div class="preview"><div id="screen" role="region" aria-label="320 by 240 simulated CYD screen"></div></div>
+   <p class="muted small">Click a gauge to cycle its metric. Use the screen's bottom navigation to switch pages, layouts and setup — just like the planned touchscreen controls.</p>
+  </section>
+  <aside>
+    <h2>Simulator controls</h2>
+    <div class="control"><label for="scenario">Driving scenario</label>
+      <select id="scenario"><option value="idle">Parked idle</option><option value="cruise">Highway cruise</option><option value="accelerate">Acceleration test</option></select>
+    </div>
+    <div class="buttons">
+      <button class="action" id="pause" type="button">Pause readings</button>
+      <button class="action" id="units" type="button">Switch to metric</button>
+      <button class="action" id="layout" type="button">Focus layout</button>
+      <button class="action" id="next" type="button">Next gauge page</button>
+    </div>
+    <div class="rule">
+      <div class="control"><label for="slot">Configure gauge</label><select id="slot"><option value="0">Top-left / primary</option><option value="1">Top-right / secondary 1</option><option value="2">Bottom-left / secondary 2</option><option value="3">Bottom-right / secondary 3</option></select></div>
+      <div class="control"><label for="metric">Show metric</label><select id="metric"></select></div>
+    </div>
+    <div class="buttons">
+      <button class="action" id="reset" type="button">Reset layout</button>
+      <button class="action" id="dash" type="button">Show dashboard</button>
+    </div>
+    <div class="status" id="status" aria-live="polite"><strong>DEMO.</strong> No Bluetooth connection or live vehicle data.</div>
+  </aside>
+ </div>
+ <p class="note">The preview works entirely offline. No website, API key, scanner, vehicle, or firmware flash required. Settings may be saved locally in this browser; readings are always generated, never imported from a vehicle. Actual CYD touch orientation remains hardware-unverified.</p>
+</main>
+<script src="model.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

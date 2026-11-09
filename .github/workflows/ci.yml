@@ -32,6 +32,21 @@ jobs:
           name: bluedriver-offline-session-replay
           path: session-replay.log
           if-no-files-found: error
+      - name: Native dashboard model and 320x240 navigation tests
+        run: |
+          g++ -std=c++11 -Wall -Wextra -Werror -Iinclude test/test_dashboard.cpp -o /tmp/test_dashboard
+          /tmp/test_dashboard
+      - name: Browser simulator functionality and script syntax
+        run: |
+          node --check simulator/model.js
+          node --check simulator/app.js
+          node test/test_browser_model.js
+      - name: Publish standalone browser simulator
+        uses: actions/upload-artifact@v4
+        with:
+          name: bluedriver-cyd-offline-browser-simulator
+          path: simulator/
+          if-no-files-found: error
   firmware:
     runs-on: ubuntu-latest
     steps:
@@ -46,6 +61,6 @@ jobs:
       - name: Publish unverified firmware binary
         uses: actions/upload-artifact@v4
         with:
-          name: bluedriver-cyd-v0.3.0-ble-experimental
+          name: bluedriver-cyd-v0.3.1-offline-dashboard-experimental
           path: .pio/build/cyd/firmware.bin
           if-no-files-found: error
