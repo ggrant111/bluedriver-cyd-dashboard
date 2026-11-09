@@ -1,6 +1,6 @@
 # Technical Reference — BlueDriver → ESP32 CYD → 2024 Ford Bronco
 
-**Revision:** 2026-11-09 • **Scope:** Interoperability research, not a claim of working vehicle connectivity.  
+**Revision:** 2026-11-09 (v0.3 discovery implementation) • **Scope:** Interoperability research, not a claim of working vehicle connectivity.  
 **Evidence grades:** [PUBLISHED] third-party published information, [PROJECT-VERIFIED] demonstrated on our hardware (none yet), [PROPOSED] design choice, [UNKNOWN] needs measurements.
 
 ## Hardware targets
@@ -18,12 +18,30 @@
 | RGB LED | R / G / B | 4 / 16 / 17 (active low on common boards; verify physical unit) |
 | Speaker amp | PWM/DAC candidate | 26 (board-specific; not used in v0.1) |
 
-[PROPOSED] Toolchain: PlatformIO + Arduino core for ESP32, TFT_eSPI for LCD, XPT2046_Touchscreen (separate SPI bus) for touch, NimBLE-Arduino for BLE later. Keep ESP32 display and touch SPI buses separate. Allocate minimal heap; no PSRAM is expected on common CYD boards.
+[IMPLEMENTED IN FIRMWARE, HARDWARE UNVERIFIED] Toolchain: PlatformIO + Arduino core for ESP32, TFT_eSPI for LCD, NimBLE-Arduino **1.4.3** for BLE. XPT2046 touch support/calibration still planned; v0.3 uses the USB serial console for intentional pairing and selection. Keep ESP32 display and touch SPI buses separate. Allocate minimal heap; no PSRAM is expected on common CYD boards.
 
 **References:**  
 - https://github.com/JamesDavid/Overhead/blob/main/CYD-ESP32-2432S028R.md  
 - https://github.com/edemko/esp32-2432s028r-idf-clock  
 - https://github.com/chanslor/ESP32-2432S028R/blob/master/User_Setup.h
+
+## v0.3 BLE discovery / reconnaissance implementation
+
+**Status:** Code committed on feature branch, **not validated on actual CYD/BlueDriver hardware**. Scanner does not exchange OBD-II data.
+
+- On boot, NimBLE starts a **6-second active BLE scan** and looks for advertised names beginning with `BlueDriv` or `LSB2-` (case-insensitive). Maximum 6 candidates in the UI. Ignores unknown BLE advertisements by default.
+- Serial `s` rescans BlueDriver names; `a` scans and lists ALL devices as an opt-in discovery fallback. Never connect to unknown devices without verifying that they are yours; all-device logs may reveal private names, so keep them private.
+- Serial `1` through `6` explicitly selects a candidate and connects, then reads its GATT service and characteristic **metadata** (UUID, properties). No writes or vehicle requests.
+- Serial `p` explicitly attempts a BLE **Just Works** secured session/bond on the selected linked device. Bluetooth security must be tested against the physical BlueDriver version; reported pairing may require an encrypted characteristic read in future revisions.
+- Serial `x` disconnects; `b` shows BLE screen; `d` shows simulated gauge screen; `h` prints help. Serial baud 115200.
+- BLE scan and GATT enumeration may temporarily block the main UI task; the screen displays a scan status before starting. Optimization after first successful hardware trace.
+- Scanned addresses are kept in RAM only; serial log masks most of the MAC address. **Never commit raw MAC, VIN, BLE pairing secrets, or personally identifying scan captures.**
+- On disconnect, the BLE state changes to `Link lost`. The demo gauge screen remains explicitly labeled `DEMO` even when BLE is connected.
+- The characteristic registry recognizes CMD, DATA, STATUS and ENCRYPTED UUIDs. A `known: 4/4` report would only validate GATT UUID presence, not the proprietary command sequence or live car data.
+
+**Verification commands and expected log prefixes:** `pio run -e cyd`, `pio device monitor -b 115200`. Expected `[BOOT]`, `[BLE]` and `[GATT]`. On-target screenshots/serial captures are required for project verification.
+
+Reference for NimBLE version split: https://github.com/h2zero/NimBLE-Arduino/blob/master/docs/1.x_to2.x_migration_guide.md (v0.3 targets **1.4.3**, which uses second-based blocking scan and pointer-based service/characteristic vectors).
 
 ## BlueDriver BLE interoperability research
 
@@ -128,7 +146,7 @@ DISCONNECTED → SCANNING → CONNECTING → GATT_DISCOVERY → (PAIRING as requ
 | PlatformIO CYD compilation | ESP32-2432S028R | **PASS (cross-compile only)** | 2026-11-09, [CI run #4](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42697990863) |
 | LCD driver and rotation | user's CYD | Pending | — |
 | Touch calibration | user's CYD | Pending | — |
-| BLE advertisement & UUIDs | user's BlueDriver | Pending | — |
+| BLE advertisement & UUIDs | user's BlueDriver | **Code implemented; physical verification pending** | v0.3 BLE diagnostics |
 | BLE SMP/credit/LM init | user's BlueDriver | Pending | — |
 | RPM / speed / coolant / voltage | 2024 Bronco 2.3L | Pending | — |
 
