@@ -41,6 +41,12 @@ jobs:
           node --check simulator/model.js
           node --check simulator/app.js
           node test/test_browser_model.js
+      - name: Publish standalone browser simulator
+        uses: actions/upload-artifact@v4
+        with:
+          name: bluedriver-cyd-offline-browser-simulator
+          path: simulator/
+          if-no-files-found: error
   firmware:
     runs-on: ubuntu-latest
     steps:
