@@ -31,7 +31,7 @@
 
 The CYD firmware now boots directly to the demo dashboard, uses Preferences/NVS for gauge/layout/unit/page/scenario selection, provides serial navigation and an XPT2046 touchscreen driver configured for the commonly published CYD GPIOs. Raw touch calibration and rotation assumptions **are NOT verified**; use serial `t` to capture four-corner touch events. The previous v0.3 read-only BLE scan remains available on demand, without driving dashboard sensor readings.
 
-The offline browser preview in `simulator/index.html` mirrors the screens and synthetic model, uses no Bluetooth or web backend, and can be opened from an extracted repository ZIP. See [DASHBOARD_SIMULATOR.md](DASHBOARD_SIMULATOR.md) for the layout contract and tests.
+The offline browser preview in `simulator/index.html` mirrors the screens and synthetic model, uses no Bluetooth or web backend, and can be opened from an extracted repository ZIP. Native/browser tests and the CYD firmware cross-build passed in [run #61](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42721276682); physical verification has not occurred. See [DASHBOARD_SIMULATOR.md](DASHBOARD_SIMULATOR.md) for the layout contract and tests.
 
 ## v0.3 BLE discovery / reconnaissance implementation
 
