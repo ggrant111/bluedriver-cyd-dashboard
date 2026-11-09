@@ -18,6 +18,20 @@ jobs:
         run: |
           g++ -std=c++11 -Wall -Wextra -Werror -Iinclude test/test_discovery.cpp -o /tmp/test_discovery
           /tmp/test_discovery
+      - name: Offline LM sequence and error recovery tests
+        run: |
+          g++ -std=c++11 -Wall -Wextra -Werror -Iinclude test/test_session.cpp -o /tmp/test_session
+          /tmp/test_session
+      - name: Deterministic offline session replay
+        run: |
+          g++ -std=c++11 -Wall -Wextra -Werror -Iinclude tools/replay_session.cpp -o /tmp/replay_session
+          /tmp/replay_session | tee session-replay.log
+      - name: Upload synthetic replay log
+        uses: actions/upload-artifact@v4
+        with:
+          name: bluedriver-offline-session-replay
+          path: session-replay.log
+          if-no-files-found: error
   firmware:
     runs-on: ubuntu-latest
     steps:

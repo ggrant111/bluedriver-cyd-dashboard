@@ -8,6 +8,20 @@
 
 - [ROADMAP.md](ROADMAP.md) — phases, CI milestones, hardware validation gates
 - [docs/TECHNICAL_REFERENCE.md](docs/TECHNICAL_REFERENCE.md) — BlueDriver BLE research, service/characteristic UUIDs, pinout, OBD formulas, actual evidence ledger
+- [docs/OFFLINE_TESTING.md](docs/OFFLINE_TESTING.md) — v0.4 preparation: simulated LM session, error tests, replay commands, remaining hardware steps
+
+## Work that can run without the scanner or car
+
+The **offline v0.4 preparation** includes `include/bluedriver_session.h`, `test/test_session.cpp` and `tools/replay_session.cpp`: a testable transport-independent BlueDriver LM initializer. It simulates the full nine-command setup, CREDIT and fragment ACK flow, no command pipelining, completion prompts, timeouts and write errors. **It is not wired into the v0.3 ESP32 BLE scanner and cannot send Bluetooth or vehicle commands.**
+
+Run the simulator locally (C++11 compiler required):
+
+~~~bash
+g++ -std=c++11 -Wall -Wextra -Werror -Iinclude tools/replay_session.cpp -o replay_session
+./replay_session
+~~~
+
+GitHub Actions also publishes a downloadable **bluedriver-offline-session-replay** text log with synthetic packet traces; you can inspect it in a browser without any device.
 
 ## Build and flash
 

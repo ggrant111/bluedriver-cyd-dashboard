@@ -43,6 +43,12 @@
 
 Reference for NimBLE version split: https://github.com/h2zero/NimBLE-Arduino/blob/master/docs/1.x_to2.x_migration_guide.md (v0.3 targets **1.4.3**, which uses second-based blocking scan and pointer-based service/characteristic vectors).
 
+## Offline LM protocol simulator (v0.4 pre-hardware)
+
+[SIMULATED ONLY] The new pure C++ state engine in `include/bluedriver_session.h` models the nine published LM commands, CR/XOR framing, raw 00 FF 7F credit, per-DATA-fragment 01 LEN 00 acknowledgments, sequential response completion at '>', and fail-closed timeout/error paths. The replay CLI and tests use synthetic bytes and do **not** open a Bluetooth connection, write to CMD/DATA, or retrieve any live vehicle information. **Native tests, synthetic replay artifact, and the existing CYD cross-build passed** in [CI run #36](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42717850064) on 2026-11-09. This engine is **not connected to the ESP32 firmware** yet.
+
+Detailed commands, negative tests, and criteria for the first real scanner session: [OFFLINE_TESTING.md](OFFLINE_TESTING.md). Passing native simulations and firmware compilation means level A/B only, never C/D/E.
+
 ## BlueDriver BLE interoperability research
 
 **Primary third-party reference:** https://github.com/sjalkote/bluedriver-reverse-engineering
@@ -147,7 +153,7 @@ DISCONNECTED → SCANNING → CONNECTING → GATT_DISCOVERY → (PAIRING as requ
 | LCD driver and rotation | user's CYD | Pending | — |
 | Touch calibration | user's CYD | Pending | — |
 | BLE advertisement & UUIDs | user's BlueDriver | **CI compile PASS; physical verification pending** | [v0.3 CI run #22](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42714380035) |
-| BLE SMP/credit/LM init | user's BlueDriver | Pending | — |
+| BLE SMP/credit/LM init | user's BlueDriver | **Physical testing pending; offline simulator CI PASS** | [Run #36](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42717850064), [OFFLINE_TESTING.md](OFFLINE_TESTING.md) |
 | RPM / speed / coolant / voltage | 2024 Bronco 2.3L | Pending | — |
 
 **Keep this document synchronized with ROADMAP.md and serial capture evidence.** Never upgrade PUBLISHED to PROJECT-VERIFIED without test details.
