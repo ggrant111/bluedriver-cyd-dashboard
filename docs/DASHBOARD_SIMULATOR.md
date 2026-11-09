@@ -7,7 +7,7 @@ This milestone is designed for development **without the vehicle, BlueDriver don
 ## Browser simulator: run locally
 
 1. Open the repository and choose **Code → Download ZIP**, then extract the entire archive.
-2. Open \`simulator/index.html\` in a browser (Chrome, Safari, Edge or Firefox). Keep \`model.js\` and \`app.js\` alongside it.
+2. Open `simulator/index.html` in a browser (Chrome, Safari, Edge or Firefox). Keep `model.js` and `app.js` alongside it.
 3. No web server, internet access, API key, Bluetooth, or car is needed.
 4. The preview can be viewed on desktop or a phone; the virtual display always uses a **320 × 240 coordinate system** and scales visually to fit the browser.
 5. Click a gauge to cycle metrics. Choose the slot and metric from the control panel for a specific placement.
@@ -51,11 +51,11 @@ The actual CYD firmware boots **directly to the demo dashboard** even when no sc
 
 ### Build / flash
 
-\`\`\`bash
+```bash
 pio run -e cyd
 pio run -e cyd -t upload --upload-port COM6
 pio device monitor -b 115200 --port COM6
-\`\`\`
+```
 
 Use your current port in place of COM6. A successful CI cross-build is not proof that your board's LCD and touch are calibrated.
 
@@ -81,8 +81,8 @@ The common **ESP32-2432S028R** CYD uses XPT2046 on a separate SPI bus: SCLK 25, 
 
 **Not validated on the user's actual CYD.** Some clones swap, invert, or rotate touch axes or use a different controller. If touch positions do not correspond to the screen:
 
-1. Open 115200-baud serial monitor and enter \`t\` to enable debug.
-2. Tap the four visual corners, note \`[TOUCH] raw=(x,y,z) mapped=(x,y)\` logs.
+1. Open 115200-baud serial monitor and enter `t` to enable debug.
+2. Tap the four visual corners, note `[TOUCH] raw=(x,y,z) mapped=(x,y)` logs.
 3. Do not blindly remap touch coordinates until all four corners are observed; use serial controls meanwhile.
 4. Preserve a log/screenshot with board controller revision and firmware SHA for the next calibration patch.
 
@@ -90,8 +90,8 @@ UI repaint strategy: only the values inside each gauge card are updated at 650 m
 
 ## Tests and CI
 
-- \`test/test_dashboard.cpp\`: host-native C++ tests for model defaults, page/metric cycling, unit conversions, pause/freshness thresholds, millis rollover and 320×240 tap routing.
-- \`test/test_browser_model.js\`: Node tests for browser-simulator model defaults, scenarios, units, settings persistence, synthetic-only behavior and UI source contracts.
+- `test/test_dashboard.cpp`: host-native C++ tests for model defaults, page/metric cycling, unit conversions, pause/freshness thresholds, millis rollover and 320×240 tap routing.
+- `test/test_browser_model.js`: Node tests for browser-simulator model defaults, scenarios, units, settings persistence, synthetic-only behavior and UI source contracts.
 - Existing protocol, BLE identity and offline LM session tests remain active.
 - GitHub Actions builds the ESP32 firmware and publishes **bluedriver-cyd-v0.3.1-offline-dashboard-experimental** plus the offline LM replay artifact.
 
