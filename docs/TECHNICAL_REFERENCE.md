@@ -124,8 +124,8 @@ DISCONNECTED → SCANNING → CONNECTING → GATT_DISCOVERY → (PAIRING as requ
 
 | Item | Target | Result | Date / evidence |
 | --- | --- | --- | --- |
-| Native decoder tests | host g++ | Pending | — |
-| PlatformIO CYD compilation | ESP32-2432S028R | Pending | — |
+| Native decoder tests | host g++ | **PASS** | 2026-11-09, [CI run #4](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42697990863) |
+| PlatformIO CYD compilation | ESP32-2432S028R | **PASS (cross-compile only)** | 2026-11-09, [CI run #4](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42697990863) |
 | LCD driver and rotation | user's CYD | Pending | — |
 | Touch calibration | user's CYD | Pending | — |
 | BLE advertisement & UUIDs | user's BlueDriver | Pending | — |
