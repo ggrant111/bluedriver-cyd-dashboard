@@ -27,7 +27,7 @@
 
 ## v0.3 BLE discovery / reconnaissance implementation
 
-**Status:** Code committed on feature branch, **not validated on actual CYD/BlueDriver hardware**. Scanner does not exchange OBD-II data.
+**Status:** v0.3 host-native tests and CYD cross-compilation **passed** ([CI run #22](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42714380035)); **not validated on actual CYD/BlueDriver hardware**. Scanner does not exchange OBD-II data.
 
 - On boot, NimBLE starts a **6-second active BLE scan** and looks for advertised names beginning with `BlueDriv` or `LSB2-` (case-insensitive). Maximum 6 candidates in the UI. Ignores unknown BLE advertisements by default.
 - Serial `s` rescans BlueDriver names; `a` scans and lists ALL devices as an opt-in discovery fallback. Never connect to unknown devices without verifying that they are yours; all-device logs may reveal private names, so keep them private.
@@ -146,7 +146,7 @@ DISCONNECTED → SCANNING → CONNECTING → GATT_DISCOVERY → (PAIRING as requ
 | PlatformIO CYD compilation | ESP32-2432S028R | **PASS (cross-compile only)** | 2026-11-09, [CI run #4](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42697990863) |
 | LCD driver and rotation | user's CYD | Pending | — |
 | Touch calibration | user's CYD | Pending | — |
-| BLE advertisement & UUIDs | user's BlueDriver | **Code implemented; physical verification pending** | v0.3 BLE diagnostics |
+| BLE advertisement & UUIDs | user's BlueDriver | **CI compile PASS; physical verification pending** | [v0.3 CI run #22](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42714380035) |
 | BLE SMP/credit/LM init | user's BlueDriver | Pending | — |
 | RPM / speed / coolant / voltage | 2024 Bronco 2.3L | Pending | — |
 
