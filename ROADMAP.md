@@ -5,7 +5,7 @@
 **Target hardware:** ESP32-2432S028R (2.8-inch resistive-touch CYD, 320x240 landscape)  
 **Data source:** BlueDriver OBD-II Bluetooth LE adapter  
 **As of:** 2026-11-09  
-**Status:** v0.3.1 offline dashboard/browser simulator implemented for CI validation. No live BLE writes or vehicle telemetry are enabled. Physical CYD touch/display calibration, BlueDriver pairing, and vehicle data remain unverified.
+**Status:** v0.3.1 dashboard/browser simulator implemented; native/browser model tests and firmware compilation passed in GitHub Actions ([CI run #61](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42721276682)). Touch/display hardware and BlueDriver/vehicle data remain unverified.
 
 ## Goal
 
@@ -36,14 +36,15 @@ An independent, offline-capable in-vehicle dashboard. The CYD connects directly 
 | v0.9.0 | Distribution | OTA/update architecture, firmware release assets and flashing instructions | Recovery flash tested; artifact hash and board identity published |
 | v1.0.0 | Stable release | Test matrix, documentation, release manifest, supported model limitations | All stable criteria met on target hardware and vehicle |
 
-## v0.3.1 — offline dashboard simulator (CI pending)
+## v0.3.1 — offline dashboard simulator (CI passed; hardware pending)
 
 - [x] Create offline browser CYD 320×240 preview (no BLE, server or car required).
 - [x] Share documented model semantics: 9 synthetic metrics, 2 pages, Grid/Focus, imperial/metric, Idle/Cruise/Accelerate.
 - [x] Implement pause/resume with data age (LAG after 1500ms, STALE after 3500ms).
 - [x] Add firmware dashboard/settings screens with gauge selection, NVS persistence, serial navigation and XPT2046 tap routing.
 - [x] Add native model/navigation and Node browser tests; keep BLE read-only diagnostics separate.
-- [ ] CI tests and firmware build pass for this milestone.
+- [x] Package standalone browser simulator as a downloadable CI artifact.
+- [x] CI native/browser tests and firmware cross-build passed — [run #61](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42721276682).
 - [ ] Calibrate touch and verify screen redraw on user's physical CYD.
 
 Guide: [docs/DASHBOARD_SIMULATOR.md](docs/DASHBOARD_SIMULATOR.md). **This is not yet a real vehicle dashboard.**
