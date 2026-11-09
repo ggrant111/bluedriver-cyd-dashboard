@@ -5,7 +5,7 @@
 **Target hardware:** ESP32-2432S028R (2.8-inch resistive-touch CYD, 320x240 landscape)  
 **Data source:** BlueDriver OBD-II Bluetooth LE adapter  
 **As of:** 2026-11-09  
-**Status:** v0.3 BLE firmware passed CI. v0.4 offline protocol preparation added for synthetic testing (no real BLE writes). The v0.2 CYD hardware bring-up, real BLE connection, and live vehicle data are still unverified.
+**Status:** v0.4 offline protocol preparation passed native tests and the unchanged CYD v0.3 firmware still cross-builds ([CI run #36](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42717850064)). No live BLE writes are enabled. The v0.2 CYD hardware bring-up, real BLE connection, and vehicle data are still unverified.
 
 ## Goal
 
@@ -42,7 +42,7 @@ An independent, offline-capable in-vehicle dashboard. The CYD connects directly 
 - [x] Add read-only synthetic packet replay with observable command hex, fragment sizes and ACKs.
 - [x] Add host-native negative tests: timeout, unexpected sequencing, missing ACK, response overflow, and failed writes.
 - [x] Add an offline session replay log artifact to CI; no physical scanner is accessed.
-- [ ] Confirm synthetic tests and firmware cross-build pass on the feature branch.
+- [x] Confirm synthetic tests and firmware cross-build pass on the feature branch — [CI run #36](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42717850064), 2026-11-09.
 - [ ] Real adapter GATT/bond/subscription evidence and actual BLE transport remain future work.
 - [ ] Only after physical verification, integrate real writes as an explicit opt-in hardware milestone.
 
