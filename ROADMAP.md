@@ -5,7 +5,7 @@
 **Target hardware:** ESP32-2432S028R (2.8-inch resistive-touch CYD, 320x240 landscape)  
 **Data source:** BlueDriver OBD-II Bluetooth LE adapter  
 **As of:** 2026-11-09  
-**Status:** v0.3 BLE discovery/diagnostic implementation in progress. v0.1 host tests/build passed; v0.2 physical CYD bring-up is still pending, so BLE functionality remains hardware-unverified.
+**Status:** v0.3 BLE discovery/diagnostic firmware and native tests **PASS in CI**; v0.2 CYD hardware bring-up and physical BLE discovery/connection/pairing remain unverified.
 
 ## Goal
 
@@ -42,7 +42,7 @@ An independent, offline-capable in-vehicle dashboard. The CYD connects directly 
 - [x] Explicit connection and GATT characteristic/property enumeration over NimBLE.
 - [x] Optional manual BLE security request (serial 'p'); no automatic bonding or OBD writes.
 - [x] Preserve separate, prominently labeled DEMO mode.
-- [ ] CI firmware compile and native tests for v0.3.
+- [x] CI firmware compile and native tests for v0.3 — [passing run #22](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42714380035) (2026-11-09).
 - [ ] Flash actual CYD; verify LCD, serial UX, scan and GATT; collect redacted evidence.
 - [ ] Confirm physical pairing and stable reconnection; touch calibration remains v0.2 work.
 
