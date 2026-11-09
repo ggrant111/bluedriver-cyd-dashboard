@@ -5,7 +5,7 @@
 **Target hardware:** ESP32-2432S028R (2.8-inch resistive-touch CYD, 320x240 landscape)  
 **Data source:** BlueDriver OBD-II Bluetooth LE adapter  
 **As of:** 2026-11-09  
-**Status:** v0.4 offline protocol preparation passed native tests and the unchanged CYD v0.3 firmware still cross-builds ([CI run #36](https://github.com/ggrant111/bluedriver-cyd-dashboard/actions/runs/42717850064)). No live BLE writes are enabled. The v0.2 CYD hardware bring-up, real BLE connection, and vehicle data are still unverified.
+**Status:** v0.3.1 offline dashboard/browser simulator implemented for CI validation. No live BLE writes or vehicle telemetry are enabled. Physical CYD touch/display calibration, BlueDriver pairing, and vehicle data remain unverified.
 
 ## Goal
 
@@ -27,6 +27,7 @@ An independent, offline-capable in-vehicle dashboard. The CYD connects directly 
 | v0.1.0 | Project bootstrap | PlatformIO project, basic landscape dashboard with clearly labeled DEMO values, PID decoder, docs, native test harness, CI firmware build/artifact | Host tests pass and CYD firmware compiles in CI; hardware unverified |
 | v0.2.0 | CYD bring-up | Board revision check, TFT colors/orientation, touch calibration, screen refresh without full-screen flicker, stable power/boot | Device shows test screen; touch corners work; serial log saved |
 | v0.3.0 | BlueDriver BLE discovery | Scan advertised names 'BlueDriv'/'LSB2-', show RSSI/device identity, explicit serial selection, GATT inventory and optional manual bond | **A/B:** tests and firmware build; **C/D:** actual CYD scanner/connection/bonding evidence required before closing milestone |
+| v0.3.1 | Offline UX simulator | Browser-based 320×240 preview, synthetic gauge model, units/layout/page customization, stale-data UX, and planned touch controls | CI native/browser tests + firmware compile; physical touch calibration pending |
 | v0.4.0 | BlueDriver proprietary session | Connect/bond as needed, subscribe CMD/DATA/STATUS, implement XOR, credit window/fragment ACKs, exact LM setup sequence, sequential command runner | Scanner reaches ready state; one known PID returns a complete answer with '>' delimiter |
 | v0.5.0 | Vehicle data | Capability detection; serial polling of standard Mode 01 RPM, speed, coolant, load, throttle, intake air, fuel level, ECU voltage | At least RPM, speed, coolant, voltage confirmed against known state/independent reader |
 | v0.6.0 | Dashboard UX & reliability | Gauge layout, freshness/timeout indicators, stable redraw and reconnection, settings persistence, user-selectable units | Sustained driving-session bench/passenger test without misleading stale readings |
@@ -35,7 +36,19 @@ An independent, offline-capable in-vehicle dashboard. The CYD connects directly 
 | v0.9.0 | Distribution | OTA/update architecture, firmware release assets and flashing instructions | Recovery flash tested; artifact hash and board identity published |
 | v1.0.0 | Stable release | Test matrix, documentation, release manifest, supported model limitations | All stable criteria met on target hardware and vehicle |
 
-## v0.4 offline preparation — safe without car (CI verification pending)
+## v0.3.1 — offline dashboard simulator (CI pending)
+
+- [x] Create offline browser CYD 320×240 preview (no BLE, server or car required).
+- [x] Share documented model semantics: 9 synthetic metrics, 2 pages, Grid/Focus, imperial/metric, Idle/Cruise/Accelerate.
+- [x] Implement pause/resume with data age (LAG after 1500ms, STALE after 3500ms).
+- [x] Add firmware dashboard/settings screens with gauge selection, NVS persistence, serial navigation and XPT2046 tap routing.
+- [x] Add native model/navigation and Node browser tests; keep BLE read-only diagnostics separate.
+- [ ] CI tests and firmware build pass for this milestone.
+- [ ] Calibrate touch and verify screen redraw on user's physical CYD.
+
+Guide: [docs/DASHBOARD_SIMULATOR.md](docs/DASHBOARD_SIMULATOR.md). **This is not yet a real vehicle dashboard.**
+
+## v0.4 offline preparation — safe without car
 
 - [x] Add transport-independent nine-command LM handshake state machine.
 - [x] Add bounded response/prompt gating and per-DATA-fragment ACK prioritization.
@@ -81,7 +94,10 @@ Passing A/B does NOT imply C/D/E/F.
 
 ## Proposed software boundaries
 
-- 'src/main.cpp': physical display/UI and lifecycle.
+- 'src/main.cpp': demo dashboard/settings, touch/serial navigation, separate BLE diagnostics.
+- 'include/dashboard_model.h': synthetic metric model, units/freshness/scenarios.
+- 'include/dashboard_navigation.h': geometry-based 320×240 hit testing.
+- 'simulator/': offline browser dashboard preview, no scanner/web backend.
 - 'include/obd_pids.h': platform-independent, pure PID decode functions.
 - 'include/bluedriver_protocol.h': XOR and response-reassembly primitives.
 - 'include/bluedriver_session.h': transport-free v0.4 LM protocol simulator (not attached to BLE transport).
